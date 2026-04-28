@@ -1,308 +1,325 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="appTitle">المساعد الأكاديمي</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>المساعد الأكاديمي - النسخة البريميوم 🎓</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #F0F4F8; --card: #FFFFFF; --text: #1E293B; --primary: #4D95FF;
+            --header-grad: linear-gradient(180deg, #A4CDFF 0%, #F0F4F8 100%);
+            --accent: #4D95FF; --gray: #94A3B8; --border: #E2E8F0;
+        }
 
-<style>
-:root{
-    --bg:#f1f5f9;
-    --card:#fff;
-    --primary:#4D95FF;
-    --text:#222;
-}
+        body.dark {
+            --bg: #0F172A; --card: #1E293B; --text: #F8FAFC; --primary: #38BDF8;
+            --header-grad: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+            --border: #334155;
+        }
 
-body.dark{
-    --bg:#0f172a;
-    --card:#1e293b;
-    --text:#fff;
-}
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
 
-body{
-    margin:0;
-    font-family:sans-serif;
-    background:var(--bg);
-    color:var(--text);
-}
+        /* القائمة الجانبية */
+        .sidebar { position: fixed; right: -100%; top: 0; width: 80%; max-width: 300px; height: 100%; background: var(--card); z-index: 1000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -10px 0 30px rgba(0,0,0,0.1); padding: 20px; }
+        .sidebar.active { right: 0; }
+        .sidebar-header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .profile-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); padding: 3px; }
+        .side-link { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.2s; font-weight: 600; color: var(--text); text-decoration: none; }
+        .side-link:hover { background: rgba(77, 149, 255, 0.1); }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(4px); }
 
-/* صفحات */
-.page{display:none;padding:15px;}
-.page.active{display:block}
+        /* الهيدر */
+        .main-header { background: var(--header-grad); padding: 40px 20px 20px; text-align: center; position: relative; }
+        .top-btns { position: absolute; top: 20px; width: calc(100% - 40px); display: flex; justify-content: space-between; align-items: center; }
+        .round-btn { width: 40px; height: 40px; border-radius: 12px; background: var(--card); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+        .bot-avatar { width: 100px; height: 100px; background: white; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .bot-avatar img { width: 80%; }
 
-/* كارد */
-.card{
-    background:var(--card);
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:10px;
-    display:flex;
-    justify-content:space-between;
-    cursor:pointer;
-}
+        /* البحث */
+        .search-area { padding: 0 20px; margin-top: -20px; }
+        .search-box { background: var(--card); border-radius: 15px; padding: 12px 20px; display: flex; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .search-box input { flex: 1; border: none; background: transparent; outline: none; font-family: 'Cairo'; color: var(--text); }
+        .search-box i { color: var(--primary); margin-right: 10px; }
 
-/* ناف بار */
-.nav{
-    position:fixed;
-    bottom:0;
-    width:100%;
-    background:var(--card);
-    display:flex;
-    justify-content:space-around;
-    padding:10px;
-}
+        /* الشبكة Grid */
+        .home-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 25px 20px; }
+        .menu-card { background: var(--card); border-radius: 20px; padding: 20px 10px; text-align: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s; }
+        .menu-card:active { transform: scale(0.95); }
+        .menu-card i { font-size: 28px; margin-bottom: 10px; display: block; }
+        .menu-card span { font-size: 11px; font-weight: 700; line-height: 1.4; display: block; }
 
-/* Sidebar */
-.sidebar{
-    position:fixed;
-    right:-100%;
-    top:0;
-    width:260px;
-    height:100%;
-    background:var(--card);
-    transition:.3s;
-    padding:20px;
-}
-.sidebar.active{right:0;}
+        /* الصفحات الداخلية */
+        .page { display: none; padding: 20px; padding-bottom: 100px; animation: slideIn 0.4s ease-out; }
+        .page.active { display: block; }
+        .page-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .list-item { background: var(--card); border-radius: 18px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
+        .item-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-.profile{
-    text-align:center;
-}
-.profile img{
-    width:80px;
-    border-radius:50%;
-}
+        /* الإعدادات */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--card); border-radius: 15px; margin-bottom: 10px; }
+        .switch { position: relative; display: inline-block; width: 45px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(21px); }
 
-/* Admin */
-.admin{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:#fff;
-    display:none;
-    padding:20px;
-}
-input,button{
-    width:100%;
-    padding:10px;
-    margin:5px 0;
-}
-</style>
+        /* الشريط السفلي */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); border-radius: 25px 25px 0 0; z-index: 900; }
+        .nav-item { text-align: center; color: var(--gray); font-size: 11px; cursor: pointer; transition: 0.3s; flex: 1; }
+        .nav-item.active { color: var(--primary); font-weight: 700; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .center-nav { position: relative; top: -30px; background: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(77, 149, 255, 0.3); border: 5px solid var(--bg); }
+        .center-nav img { width: 70%; }
+
+        /* لوحة التحكم (Admin) */
+        .admin-panel { background: #1a1a2e; color: white; padding: 25px; border-radius: 30px 30px 0 0; position: fixed; bottom: 0; width: 100%; z-index: 2000; display: none; box-sizing: border-box; }
+        .admin-input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; font-family: 'Cairo'; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
+<body id="appBody">
 
-<body>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-<!-- SIDEBAR -->
-<div id="sidebar" class="sidebar">
-    <div onclick="toggleSide()">❌</div>
-
-    <div class="profile">
-        <img id="appLogo" src="https://i.ibb.co/VvzKXY7/bot-avatar.png">
-        <h3 id="appName">المساعد الأكاديمي</h3>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://i.ibb.co/VvzKXY7/bot-avatar.png" class="profile-img">
+            <h3 style="margin:10px 0 5px;">مصطفى مهند</h3>
+            <span style="color:var(--primary); font-size:12px; font-weight:700;">@M3y4_p</span>
+        </div>
+        <div style="margin-top:20px;">
+            <div class="side-link"><i class="fas fa-user-circle"></i> الحساب الشخصي</div>
+            <div class="side-link" onclick="switchPage('settings')"><i class="fas fa-cog"></i> الإعدادات</div>
+            <div class="side-link"><i class="fas fa-palette"></i> المظهر</div>
+            <div class="side-link" onclick="toggleDark()"><i class="fas fa-moon"></i> الوضع الليلي</div>
+            <div class="side-link"><i class="fas fa-sign-out-alt" style="color:#ef4444;"></i> تسجيل الخروج</div>
+        </div>
     </div>
 
-    <div class="card">⚙️ الإعدادات</div>
-    <div class="card" onclick="toggleDark()">🌙 الوضع الليلي</div>
-    <div class="card">🔔 الإشعارات</div>
-    <div class="card">ℹ️ من نحن</div>
-    <div class="card">🌐 اللغة</div>
-    <div class="card">🚪 تسجيل خروج</div>
-</div>
+    <div id="home-page" class="page active" style="padding:0;">
+        <div class="main-header">
+            <div class="top-btns">
+                <div class="round-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+                <div class="round-btn"><i class="fas fa-bell"></i></div>
+            </div>
+            <div class="bot-avatar">
+                <img src="https://i.ibb.co/VvzKXY7/bot-avatar.png">
+            </div>
+            <h2 style="margin:0;">بوت المساعد الأكاديمي</h2>
+            <p style="opacity:0.7;">مساعدك الذكي في رحلتك التعليمية</p>
+        </div>
 
-<!-- HOME -->
-<div id="home" class="page active">
-    <h2 onclick="toggleSide()">☰ <span id="titleText">المساعد الأكاديمي</span></h2>
-    <input placeholder="بحث..." oninput="search(this.value)">
-    <div id="subjects"></div>
-</div>
+        <div class="search-area">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="mainSearch" placeholder="ابحث عن مادة أو ملف..." oninput="appSearch()">
+            </div>
+        </div>
 
-<!-- FAV -->
-<div id="fav" class="page">
-    <h2>⭐ المفضلة</h2>
-    <div id="favList"></div>
-</div>
+        <div class="home-grid">
+            <div class="menu-card" onclick="switchPage('subjects')" style="color:#4D95FF;">
+                <i class="fas fa-folder"></i><span>الأقسام والملفات<br><small style="font-weight:400; opacity:0.7;">تصفح المواد</small></span>
+            </div>
+            <div class="menu-card" style="color:#2ecc71;">
+                <i class="fas fa-clock"></i><span>العد التنازلي<br><small style="font-weight:400; opacity:0.7;">للامتحانات</small></span>
+            </div>
+            <div class="menu-card" style="color:#a855f7;">
+                <i class="fas fa-stopwatch"></i><span>منبهاتي<br><small style="font-weight:400; opacity:0.7;">الشخصية</small></span>
+            </div>
+            <div class="menu-card" style="color:#f59e0b;">
+                <i class="fas fa-lightbulb"></i><span>نصائح يومية<br><small style="font-weight:400; opacity:0.7;">خذ نصيحة</small></span>
+            </div>
+            <div class="menu-card" style="color:#ec4899;">
+                <i class="fas fa-gamepad"></i><span>قسم الترفيه<br><small style="font-weight:400; opacity:0.7;">ألعاب ممتعة</small></span>
+            </div>
+            <div class="menu-card" style="color:#3b82f6;">
+                <i class="fas fa-language"></i><span>ترجمة النصوص<br><small style="font-weight:400; opacity:0.7;">ترجمة فورية</small></span>
+            </div>
+            <div class="menu-card" style="color:#0ea5e9;">
+                <i class="fas fa-comment-alt"></i><span>إبلاغ / اقتراح<br><small style="font-weight:400; opacity:0.7;">تواصل معنا</small></span>
+            </div>
+            <div class="menu-card" style="color:#10b981;">
+                <i class="fas fa-phone"></i><span>تواصل معنا<br><small style="font-weight:400; opacity:0.7;">الدعم والإدارة</small></span>
+            </div>
+            <div class="menu-card" style="color:#6366f1;">
+                <i class="fas fa-star"></i><span>تقييم الملفات<br><small style="font-weight:400; opacity:0.7;">قيم واستفد</small></span>
+            </div>
+        </div>
+    </div>
 
-<!-- RECENT -->
-<div id="recent" class="page">
-    <h2>🕒 المحفوظات</h2>
-    <div id="recentList"></div>
-</div>
+    <div id="subjects-page" class="page">
+        <div class="page-header">
+            <div class="round-btn" onclick="switchPage('home')"><i class="fas fa-arrow-right"></i></div>
+            <h2 style="margin:0;">الأقسام والملفات</h2>
+        </div>
+        <div id="subjects-list">
+            </div>
+    </div>
 
-<!-- SEARCH -->
-<div id="more" class="page">
-    <h2>🔍 نتائج البحث</h2>
-    <div id="searchList"></div>
-</div>
+    <div id="settings-page" class="page">
+        <div class="page-header">
+            <div class="round-btn" onclick="switchPage('home')"><i class="fas fa-arrow-right"></i></div>
+            <h2 style="margin:0;">الإعدادات</h2>
+        </div>
+        <div class="setting-row">
+            <span>الوضع الليلي</span>
+            <label class="switch">
+                <input type="checkbox" id="darkToggle" onchange="toggleDark()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-row">
+            <span>الإشعارات</span>
+            <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-row" onclick="alert('تم مسح الكاش بنجاح!')" style="cursor:pointer;">
+            <span>مسح الكاش</span>
+            <span style="color:var(--gray); font-size:12px;">42.3 MB <i class="fas fa-trash-alt"></i></span>
+        </div>
+        <div class="setting-row" onclick="showAdmin()" style="cursor:pointer; background:rgba(77,149,255,0.1);">
+            <span>لوحة الإدارة (للمطور)</span>
+            <i class="fas fa-user-shield" style="color:var(--primary);"></i>
+        </div>
+    </div>
 
-<!-- ADMIN -->
-<div id="admin" class="admin">
-    <h2>لوحة التحكم</h2>
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchPage('home')"><i class="fas fa-home"></i>الرئيسية</div>
+        <div class="nav-item"><i class="fas fa-heart"></i>المفضلة</div>
+        <div class="nav-item center-nav"><img src="https://i.ibb.co/VvzKXY7/bot-avatar.png"></div>
+        <div class="nav-item"><i class="fas fa-download"></i>المحفوظات</div>
+        <div class="nav-item" onclick="toggleSidebar()"><i class="fas fa-th-large"></i>المزيد</div>
+    </div>
 
-    <input id="subName" placeholder="اسم القسم">
-    <button onclick="addSub()">إضافة قسم</button>
+    <div id="adminPanel" class="admin-panel">
+        <h3 style="margin-top:0;">إضافة محتوى سحابي</h3>
+        <input type="text" id="adminSub" class="admin-input" placeholder="اسم القسم">
+        <input type="text" id="adminFile" class="admin-input" placeholder="اسم الملف">
+        <input type="text" id="adminUrl" class="admin-input" placeholder="رابط الملف (Google Drive)">
+        <button onclick="saveToCloud()" style="width:100%; padding:15px; background:var(--primary); border:none; color:white; border-radius:12px; font-weight:700;">💾 حفظ في Firebase</button>
+        <button onclick="closeAdmin()" style="width:100%; padding:10px; background:transparent; border:none; color:#ef4444; margin-top:10px;">إلغاء</button>
+    </div>
 
-    <input id="fileName" placeholder="اسم الملف">
-    <input id="fileUrl" placeholder="رابط الملف">
-    <button onclick="addFile()">إضافة ملف</button>
+    <script>
+        // رابط قاعدة البيانات الخاص بك
+        const DB_URL = "https://hillah-app-default-rtdb.firebaseio.com/.json";
 
-    <input id="newTitle" placeholder="اسم التطبيق">
-    <input id="newLogo" placeholder="رابط الصورة">
-    <button onclick="updateApp()">تحديث الهوية</button>
+        let appData = { subjects: [] };
 
-    <button onclick="closeAdmin()">إغلاق</button>
-</div>
-
-<!-- NAV -->
-<div class="nav">
-    <div onclick="nav('home')">🏠</div>
-    <div onclick="nav('fav')">⭐</div>
-    <div onclick="nav('recent')">🕒</div>
-    <div onclick="nav('more')">🔍</div>
-</div>
-
-<script>
-let data = {subjects:[]}
-let favs = JSON.parse(localStorage.getItem("favs"))||[]
-let rec = JSON.parse(localStorage.getItem("rec"))||[]
-
-/* عرض */
-function render(){
-    let box = document.getElementById("subjects")
-    box.innerHTML=""
-
-    data.subjects.forEach((s,i)=>{
-        box.innerHTML += `<div class="card"><b>${s.name}</b></div>`
-
-        s.files?.forEach(f=>{
-            box.innerHTML += `
-            <div class="card" onclick="openFile('${f.name}','${f.url}')">
-                ${f.name}
-                <span onclick="toggleFav('${f.url}',event)">⭐</span>
-            </div>`
-        })
-    })
-}
-
-/* فتح ملف */
-function openFile(name,url){
-    rec.unshift({name,url})
-    rec = rec.slice(0,10)
-    localStorage.setItem("rec",JSON.stringify(rec))
-    window.open(url)
-}
-
-/* مفضلة */
-function toggleFav(url,e){
-    e.stopPropagation()
-    if(favs.includes(url)) favs = favs.filter(x=>x!=url)
-    else favs.push(url)
-
-    localStorage.setItem("favs",JSON.stringify(favs))
-}
-
-/* عرض المفضلة */
-function showFav(){
-    let box = document.getElementById("favList")
-    box.innerHTML=""
-
-    data.subjects.forEach(s=>{
-        s.files?.forEach(f=>{
-            if(favs.includes(f.url)){
-                box.innerHTML += `<div class="card">${f.name}</div>`
-            }
-        })
-    })
-}
-
-/* المحفوظات */
-function showRecent(){
-    let box = document.getElementById("recentList")
-    box.innerHTML=""
-
-    rec.forEach(r=>{
-        box.innerHTML += `<div class="card">${r.name}</div>`
-    })
-}
-
-/* البحث */
-function search(q){
-    nav("more")
-    let box = document.getElementById("searchList")
-    box.innerHTML=""
-
-    data.subjects.forEach(s=>{
-        s.files?.forEach(f=>{
-            if(f.name.toLowerCase().includes(q.toLowerCase())){
-                box.innerHTML += `<div class="card">${f.name}</div>`
-            }
-        })
-    })
-}
-
-/* التنقل */
-function nav(id){
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
-    document.getElementById(id).classList.add("active")
-
-    if(id=="fav") showFav()
-    if(id=="recent") showRecent()
-}
-
-/* sidebar */
-function toggleSide(){
-    document.getElementById("sidebar").classList.toggle("active")
-}
-
-/* dark */
-function toggleDark(){
-    document.body.classList.toggle("dark")
-}
-
-/* admin */
-function addSub(){
-    let n = document.getElementById("subName").value
-    data.subjects.push({name:n,files:[]})
-    render()
-}
-
-function addFile(){
-    let n = document.getElementById("fileName").value
-    let u = document.getElementById("fileUrl").value
-    data.subjects[0].files.push({name:n,url:u})
-    render()
-}
-
-function updateApp(){
-    let t = document.getElementById("newTitle").value
-    let l = document.getElementById("newLogo").value
-
-    document.getElementById("titleText").innerText = t
-    document.getElementById("appName").innerText = t
-    document.getElementById("appLogo").src = l
-}
-
-function closeAdmin(){
-    document.getElementById("admin").style.display="none"
-}
-
-/* دخول الأدمن */
-let timer
-document.body.addEventListener("mousedown",()=>{
-    timer=setTimeout(()=>{
-        let p=prompt("كلمة السر")
-        if(p=="1234"){
-            document.getElementById("admin").style.display="block"
+        // جلب البيانات عند التشغيل
+        async function loadData() {
+            try {
+                const response = await fetch(DB_URL + "?t=" + Date.now());
+                const data = await response.json();
+                if (data) appData = data;
+                renderSubjects();
+            } catch (e) { console.error("Error loading data"); }
         }
-    },2000)
-})
-document.body.addEventListener("mouseup",()=>clearTimeout(timer))
 
-render()
-</script>
+        function renderSubjects() {
+            const list = document.getElementById('subjects-list');
+            list.innerHTML = "";
+            (appData.subjects || []).forEach((sub, i) => {
+                list.innerHTML += `
+                    <div class="list-item">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div class="item-icon" style="background:rgba(77,149,255,0.1); color:var(--primary);"><i class="fas fa-folder"></i></div>
+                            <div>
+                                <div style="font-weight:700;">${sub.name}</div>
+                                <div style="font-size:11px; color:var(--gray);">${sub.files ? sub.files.length : 0} ملفات</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-left" style="color:var(--gray);"></i>
+                    </div>
+                `;
+            });
+        }
 
+        // نظام التنقل
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId + '-page').classList.add('active');
+            
+            // تحديث الشريط السفلي
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(pageId === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
+            
+            window.scrollTo(0,0);
+            if(pageId === 'subjects') renderSubjects();
+        }
+
+        // القائمة الجانبية
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('sidebar').classList.contains('active') ? "block" : "none";
+        }
+
+        // الوضع الليلي
+        function toggleDark() {
+            const isDark = document.body.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark);
+            document.getElementById('darkToggle').checked = isDark;
+        }
+
+        // البحث
+        function appSearch() {
+            let term = document.getElementById('mainSearch').value.toLowerCase();
+            if(term.length > 0) {
+                switchPage('subjects');
+                // منطق البحث في المواد
+                let items = document.querySelectorAll('.list-item');
+                items.forEach(it => {
+                    it.style.display = it.innerText.toLowerCase().includes(term) ? "flex" : "none";
+                });
+            }
+        }
+
+        // الإدارة
+        function showAdmin() { 
+            document.getElementById('adminPanel').style.display = "block"; 
+            document.getElementById('overlay').style.display = "block";
+        }
+        function closeAdmin() { 
+            document.getElementById('adminPanel').style.display = "none"; 
+            document.getElementById('overlay').style.display = "none";
+        }
+
+        async function saveToCloud() {
+            const sub = document.getElementById('adminSub').value;
+            const file = document.getElementById('adminFile').value;
+            const url = document.getElementById('adminUrl').value;
+
+            if(!sub || !file || !url) return alert("امسح الحقول أولاً!");
+
+            let subject = appData.subjects.find(s => s.name === sub);
+            if(!subject) {
+                subject = { name: sub, files: [] };
+                appData.subjects.push(subject);
+            }
+            subject.files.push({ name: file, url: url });
+
+            await fetch(DB_URL, { method: 'PUT', body: JSON.stringify(appData) });
+            alert("تم الحفظ بنجاح!");
+            closeAdmin();
+            loadData();
+        }
+
+        // استعادة الوضع الليلي المفضل
+        if(localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+            document.getElementById('darkToggle').checked = true;
+        }
+
+        loadData();
+    </script>
 </body>
 </html>
