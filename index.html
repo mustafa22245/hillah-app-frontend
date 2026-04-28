@@ -1,116 +1,311 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الحلة الجامعي - النسخة السحابية</title>
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0088cc">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="appTitle">المساعد الأكاديمي</title>
 
-    <style>
-        :root { 
-            --main-color: #0088cc; 
-            --bg-color: #f8fafd; 
-            --text-color: #333333;
-        }
-        
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; direction: rtl; transition: 0.4s; overflow-x: hidden; }
-        .header { background: linear-gradient(135deg, var(--main-color), #005588); color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 40px 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .container { padding: 20px; max-width: 800px; margin: auto; }
-        
-        /* تصميم الشبكة */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: white; padding: 25px 15px; border-radius: 25px; text-align: center; cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.05); font-weight: bold; border: 2px solid transparent; transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
-        .card:hover { border-color: var(--main-color); transform: translateY(-5px); }
-        .card span:first-child { font-size: 30px; }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-        /* لوحات العرض والتحكم */
-        .panel { display: none; background: white; border-radius: 25px; padding: 20px; margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); animation: fadeIn 0.5s; }
-        
-        /* لوحة التحكم */
-        .admin-panel { background: #1a1a2e; color: #efefef; border-top: 5px solid #e74c3c; }
-        .admin-section { background: #16213e; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #0f3460; }
-        .admin-title { color: #48abe0; font-size: 16px; font-weight: bold; margin-bottom: 15px; display: block; border-right: 4px solid #e74c3c; padding-right: 10px; }
-        .admin-input, .admin-select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #0f3460; box-sizing: border-box; background: #1a1a2e; color: white; }
-        
-        .action-btn { width: 100%; padding: 15px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; background: var(--main-color); color: white; }
-        .btn-close { background: #e74c3c; margin-bottom: 15px; }
+<style>
+:root{
+    --bg:#f1f5f9;
+    --card:#fff;
+    --primary:#4D95FF;
+    --text:#222;
+}
 
-        /* نافذة عرض الملفات المدمجة */
-        .viewer-container { position: relative; width: 100%; height: 75vh; border-radius: 15px; overflow: hidden; background: #eee; }
-        iframe { width: 100%; height: 100%; border: none; }
+body.dark{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --text:#fff;
+}
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* صفحات */
+.page{display:none;padding:15px;}
+.page.active{display:block}
+
+/* كارد */
+.card{
+    background:var(--card);
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    cursor:pointer;
+}
+
+/* ناف بار */
+.nav{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:var(--card);
+    display:flex;
+    justify-content:space-around;
+    padding:10px;
+}
+
+/* Sidebar */
+.sidebar{
+    position:fixed;
+    right:-100%;
+    top:0;
+    width:260px;
+    height:100%;
+    background:var(--card);
+    transition:.3s;
+    padding:20px;
+}
+.sidebar.active{right:0;}
+
+.profile{
+    text-align:center;
+}
+.profile img{
+    width:80px;
+    border-radius:50%;
+}
+
+/* Admin */
+.admin{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#fff;
+    display:none;
+    padding:20px;
+}
+input,button{
+    width:100%;
+    padding:10px;
+    margin:5px 0;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="header">
-        <h2 id="appTitle">تطبيق الحلة الجامعي</h2>
-        <p id="appSubtitle">تحكم سحابي فوري ☁️</p>
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+    <div onclick="toggleSide()">❌</div>
+
+    <div class="profile">
+        <img id="appLogo" src="https://i.ibb.co/VvzKXY7/bot-avatar.png">
+        <h3 id="appName">المساعد الأكاديمي</h3>
     </div>
 
-    <div class="container">
-        <div id="loader" style="text-align:center; padding:50px;">🔒 جاري جلب البيانات...</div>
+    <div class="card">⚙️ الإعدادات</div>
+    <div class="card" onclick="toggleDark()">🌙 الوضع الليلي</div>
+    <div class="card">🔔 الإشعارات</div>
+    <div class="card">ℹ️ من نحن</div>
+    <div class="card">🌐 اللغة</div>
+    <div class="card">🚪 تسجيل خروج</div>
+</div>
 
-        <div id="mainGrid" class="grid" style="display:none;"></div>
+<!-- HOME -->
+<div id="home" class="page active">
+    <h2 onclick="toggleSide()">☰ <span id="titleText">المساعد الأكاديمي</span></h2>
+    <input placeholder="بحث..." oninput="search(this.value)">
+    <div id="subjects"></div>
+</div>
 
-        <div id="contentPanel" class="panel">
-            <button class="action-btn btn-close" onclick="showMain()">🔙 العودة للقائمة</button>
-            <h3 id="viewingTitle" style="text-align:center; margin-bottom:15px;"></h3>
-            <div class="viewer-container">
-                <iframe id="appViewer" src=""></iframe>
-            </div>
-        </div>
+<!-- FAV -->
+<div id="fav" class="page">
+    <h2>⭐ المفضلة</h2>
+    <div id="favList"></div>
+</div>
 
-        <div id="adminPanel" class="panel admin-panel">
-            <button class="action-btn btn-close" onclick="showMain()">❌ إغلاق الإعدادات</button>
-            <div class="admin-section">
-                <span class="admin-title">🎨 هوية التطبيق</span>
-                <input type="text" id="editTitle" class="admin-input" placeholder="اسم التطبيق">
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px;">
-                    <label>لون التطبيق:</label>
-                    <input type="color" id="colorMain" onchange="updateDesign()">
-                </div>
-            </div>
+<!-- RECENT -->
+<div id="recent" class="page">
+    <h2>🕒 المحفوظات</h2>
+    <div id="recentList"></div>
+</div>
 
-            <div class="admin-section">
-                <span class="admin-title">➕ إضافة مادة جديدة</span>
-                <select id="typeSelect" class="admin-select">
-                    <option value="📄">ملزمة PDF</option>
-                    <option value="🎥">فيديو تعليمي</option>
-                    <option value="🔗">رابط خارجي</option>
-                </select>
-                <input type="text" id="itemName" class="admin-input" placeholder="اسم المادة">
-                <input type="text" id="itemUrl" class="admin-input" placeholder="ضع الرابط هنا">
-                <button class="action-btn" style="background:#2ecc71;" onclick="addNewItem()">💾 حفظ في السحابة</button>
-            </div>
-            <button class="action-btn" style="background:#f39c12; opacity:0.5;" onclick="deleteLast()">🗑️ حذف آخر عنصر</button>
-        </div>
+<!-- SEARCH -->
+<div id="more" class="page">
+    <h2>🔍 نتائج البحث</h2>
+    <div id="searchList"></div>
+</div>
 
-        <div style="text-align:center; padding:40px;">
-            <button onclick="showAdmin()" style="background:none; border:none; color:gray; opacity:0.2; cursor:pointer;">[ لوحة التحكم ]</button>
-        </div>
-    </div>
+<!-- ADMIN -->
+<div id="admin" class="admin">
+    <h2>لوحة التحكم</h2>
 
-    <script>
-        // الرابط الخاص بك من الصورة
-        const DB_URL = "https://hillah-app-default-rtdb.firebaseio.com/.json"; 
+    <input id="subName" placeholder="اسم القسم">
+    <button onclick="addSub()">إضافة قسم</button>
 
-        let appData = { title: "تطبيق الحلة", mainColor: "#0088cc", items: [] };
+    <input id="fileName" placeholder="اسم الملف">
+    <input id="fileUrl" placeholder="رابط الملف">
+    <button onclick="addFile()">إضافة ملف</button>
 
-        async function loadData() {
-            try {
-                const response = await fetch(DB_URL);
-                const data = await response.json();
-                if (data) appData = data;
-                applyData();
-            } catch (e) { console.error("Error connecting to Firebase"); }
+    <input id="newTitle" placeholder="اسم التطبيق">
+    <input id="newLogo" placeholder="رابط الصورة">
+    <button onclick="updateApp()">تحديث الهوية</button>
+
+    <button onclick="closeAdmin()">إغلاق</button>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+    <div onclick="nav('home')">🏠</div>
+    <div onclick="nav('fav')">⭐</div>
+    <div onclick="nav('recent')">🕒</div>
+    <div onclick="nav('more')">🔍</div>
+</div>
+
+<script>
+let data = {subjects:[]}
+let favs = JSON.parse(localStorage.getItem("favs"))||[]
+let rec = JSON.parse(localStorage.getItem("rec"))||[]
+
+/* عرض */
+function render(){
+    let box = document.getElementById("subjects")
+    box.innerHTML=""
+
+    data.subjects.forEach((s,i)=>{
+        box.innerHTML += `<div class="card"><b>${s.name}</b></div>`
+
+        s.files?.forEach(f=>{
+            box.innerHTML += `
+            <div class="card" onclick="openFile('${f.name}','${f.url}')">
+                ${f.name}
+                <span onclick="toggleFav('${f.url}',event)">⭐</span>
+            </div>`
+        })
+    })
+}
+
+/* فتح ملف */
+function openFile(name,url){
+    rec.unshift({name,url})
+    rec = rec.slice(0,10)
+    localStorage.setItem("rec",JSON.stringify(rec))
+    window.open(url)
+}
+
+/* مفضلة */
+function toggleFav(url,e){
+    e.stopPropagation()
+    if(favs.includes(url)) favs = favs.filter(x=>x!=url)
+    else favs.push(url)
+
+    localStorage.setItem("favs",JSON.stringify(favs))
+}
+
+/* عرض المفضلة */
+function showFav(){
+    let box = document.getElementById("favList")
+    box.innerHTML=""
+
+    data.subjects.forEach(s=>{
+        s.files?.forEach(f=>{
+            if(favs.includes(f.url)){
+                box.innerHTML += `<div class="card">${f.name}</div>`
+            }
+        })
+    })
+}
+
+/* المحفوظات */
+function showRecent(){
+    let box = document.getElementById("recentList")
+    box.innerHTML=""
+
+    rec.forEach(r=>{
+        box.innerHTML += `<div class="card">${r.name}</div>`
+    })
+}
+
+/* البحث */
+function search(q){
+    nav("more")
+    let box = document.getElementById("searchList")
+    box.innerHTML=""
+
+    data.subjects.forEach(s=>{
+        s.files?.forEach(f=>{
+            if(f.name.toLowerCase().includes(q.toLowerCase())){
+                box.innerHTML += `<div class="card">${f.name}</div>`
+            }
+        })
+    })
+}
+
+/* التنقل */
+function nav(id){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+    document.getElementById(id).classList.add("active")
+
+    if(id=="fav") showFav()
+    if(id=="recent") showRecent()
+}
+
+/* sidebar */
+function toggleSide(){
+    document.getElementById("sidebar").classList.toggle("active")
+}
+
+/* dark */
+function toggleDark(){
+    document.body.classList.toggle("dark")
+}
+
+/* admin */
+function addSub(){
+    let n = document.getElementById("subName").value
+    data.subjects.push({name:n,files:[]})
+    render()
+}
+
+function addFile(){
+    let n = document.getElementById("fileName").value
+    let u = document.getElementById("fileUrl").value
+    data.subjects[0].files.push({name:n,url:u})
+    render()
+}
+
+function updateApp(){
+    let t = document.getElementById("newTitle").value
+    let l = document.getElementById("newLogo").value
+
+    document.getElementById("titleText").innerText = t
+    document.getElementById("appName").innerText = t
+    document.getElementById("appLogo").src = l
+}
+
+function closeAdmin(){
+    document.getElementById("admin").style.display="none"
+}
+
+/* دخول الأدمن */
+let timer
+document.body.addEventListener("mousedown",()=>{
+    timer=setTimeout(()=>{
+        let p=prompt("كلمة السر")
+        if(p=="1234"){
+            document.getElementById("admin").style.display="block"
         }
+    },2000)
+})
+document.body.addEventListener("mouseup",()=>clearTimeout(timer))
 
-        function applyData() {
+render()
+</script>
+
+</body>
+</html>        function applyData() {
             document.getElementById('appTitle').innerText = appData.title;
             document.documentElement.style.setProperty('--main-color', appData.mainColor);
             document.getElementById('loader').style.display = "none";
